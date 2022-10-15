@@ -1,5 +1,5 @@
 """Sudoku puzzle solver using back-tracking"""
-
+import GUI
 
 def print_board(brd):
     for i, row in enumerate(brd):
@@ -36,7 +36,7 @@ def valid(val, pos, brd):
     box_r, box_c = i // 3, j // 3
     for a in range(3):
         for b in range(3):
-            if board[a+(box_r*3)][b+(box_c*3)] == val:
+            if brd[a+(box_r*3)][b+(box_c*3)] == val:
                 return False
     return True
 
@@ -47,10 +47,9 @@ def solve(brd):
         for num in range(0,10):
             if valid(num, (i,j), brd):
                 brd[i][j] = num
-
+#
                 if solve(brd):  # if board is solved
-                    print_board(brd)
-                    exit()
+                    return True
                 else: # try next number
                     continue
 
