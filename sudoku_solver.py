@@ -1,14 +1,5 @@
-"""Sudoku puzzle solver using back-tracking """
+"""Sudoku puzzle solver using back-tracking"""
 
-board = [[8, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 3, 6, 0, 0, 0, 0, 0],
-         [0, 7, 0, 0, 9, 0, 2, 0, 0],
-         [0, 5, 0, 0, 0, 7, 0, 0, 0],
-         [0, 0, 0, 0, 4, 5, 7, 0, 0],
-         [0, 0 ,0 ,1 ,0 ,0 ,0 ,3 ,0],
-         [0, 0, 1, 0, 0, 0, 0, 6, 8],
-         [0, 0, 8, 5, 0, 0, 0, 1, 0],
-         [0, 9, 0, 0, 0, 0, 4, 0, 0]]
 
 def print_board(brd):
     for i, row in enumerate(brd):
@@ -41,7 +32,7 @@ def valid(val, pos, brd):
     for row in brd:
         if row[j] == val:
             return False
-    # check box
+    # check box in grid
     box_r, box_c = i // 3, j // 3
     for a in range(3):
         for b in range(3):
@@ -51,24 +42,21 @@ def valid(val, pos, brd):
 
 def solve(brd):
     if get_empty_pos(brd):  # if board is not solved
-        i, j = get_empty_pos(brd)  # get empty position
+        i, j = get_empty_pos(brd)
 
-        for num in range(0,10): # try numbers 1-9
-            if valid(num, (i,j), brd):  # try if number is valid else continue
+        for num in range(0,10):
+            if valid(num, (i,j), brd):
                 brd[i][j] = num
 
-                if solve(brd): #is board solved?
+                if solve(brd):  # if board is solved
                     print_board(brd)
                     exit()
                 else: # try next number
                     continue
 
         brd[i][j] = 0
-        return False  # only return False if there is no numbers are valid
+        return False  # only return False if no numbers are valid
     return True  # this initiates the return up the call stack
-
-solve(board)
-
 
 
 
