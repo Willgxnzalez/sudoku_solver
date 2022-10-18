@@ -7,52 +7,73 @@ WIN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Sudoku Solver')
 
 
-CELL_SIZE = SCREEN_WIDTH // 9
-COLORS = {'black': (0, 0, 0), 'white': (255, 255, 255)}
 
-board = [[8, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 3, 6, 0, 0, 0, 0, 0],
-         [0, 7, 0, 0, 9, 0, 2, 0, 0],
-         [0, 5, 0, 0, 0, 7, 0, 0, 0],
-         [0, 0, 0, 0, 4, 5, 7, 0, 0],
-         [0, 0 ,0 ,1 ,0 ,0 ,0 ,3 ,0],
-         [0, 0, 1, 0, 0, 0, 0, 6, 8],
-         [0, 0, 8, 5, 0, 0, 0, 1, 0],
-         [0, 9, 0, 0, 0, 0, 4, 0, 0]]
+COLORS = {'black': (0, 0, 0), 'white': (255, 255, 255), 'red': (255, 0, 0)}
 
-def update_screen(brd):
+class Cell:
+    CELL_SIZE = SCREEN_WIDTH // 9
+    board = [[8, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 3, 6, 0, 0, 0, 0, 0],
+             [0, 7, 0, 0, 9, 0, 2, 0, 0],
+             [0, 5, 0, 0, 0, 7, 0, 0, 0],
+             [0, 0, 0, 0, 4, 5, 7, 0, 0],
+             [0, 0, 0, 1, 0, 0, 0, 3, 0],
+             [0, 0, 1, 0, 0, 0, 0, 6, 8],
+             [0, 0, 8, 5, 0, 0, 0, 1, 0],
+             [0, 9, 0, 0, 0, 0, 4, 0, 0]]
+    @classmethod
+    def create_cells(cls):
+        return [[cls(val, (i, j), 30, COLORS['white']) for j, val in enumerate(row)] for i, row in enumerate(Cell.board)]
+
+    def __init__(self, value, pos, size, color):
+        self.value = value
+        self.x, self.y = pos
+        self.size = size
+        self.color = color
+
+    def highlight(self, color):
+        self.color = color
+
+    def update(self, value):
+        self.value = value
+
+
+
+
+def update_screen(cells):
     WIN.fill(COLORS['white'])
 
+    for row in cells:
+        for cell in row:
+            if cell.value != 0:
+                pygame.draw.rect(WIN, cell.color, (cell.x*cell.CELL_SIZE, cell.y*cell.CELL_SIZE, cell.CELL_SIZE, cell.CELL_SIZE))
+                number_font = pygame.font.SysFont('cambria', 35).render(f'{cell.value}', True, COLORS['black'])
+                WIN.blit(number_font, (cell.x*cell.CELL_SIZE+14, cell.y*cell.CELL_SIZE+2))
     # draw grid lines and border
     pygame.draw.rect(WIN, COLORS['black'], (0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), 5)
-    for hor_line, row in enumerate(brd, 1):
-        pygame.draw.rect(WIN, COLORS['black'], (0, hor_line*CELL_SIZE, SCREEN_WIDTH, (5 if hor_line % 3 == 0 else 1)))
-        for ver_line in range(1, len(row)):
-            pygame.draw.rect(WIN, COLORS['black'], (ver_line*CELL_SIZE, 0, (5 if ver_line % 3 == 0 else 1), SCREEN_HEIGHT))
-
-        # draw numbers onto the screen
-    for i, row in enumerate(brd):
-        for j, value in enumerate(row):
-            if value != 0:
-                number_font = pygame.font.SysFont('calibri', 30).render(f'{value}', True, COLORS['black'])
-                WIN.blit(number_font, (j * CELL_SIZE + number_font.get_width() + 1, i * CELL_SIZE + number_font.get_height() // 2 - 3, 1, 1))
+    for hor_line in range(1, 9):
+        pygame.draw.rect(WIN, COLORS['black'], (0, hor_line*Cell.CELL_SIZE, SCREEN_WIDTH, (5 if hor_line % 3 == 0 else 1)))
+        for ver_line in range(1, 9):
+            pygame.draw.rect(WIN, COLORS['black'], (ver_line*Cell.CELL_SIZE, 0, (5 if ver_line % 3 == 0 else 1), SCREEN_HEIGHT))
 
     pygame.display.update()
 
+
 def main():
-    start_solve = False
     run = True
+    cells = Cell.create_cells()
+    print(cells)
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    start_solve = True
-        if start_solve:
-            solve(board)
+                    solve(Cell.board, cells)
 
-        update_screen(board)
+
+
+        update_screen(cells)
 
 
 if __name__ == '__main__':

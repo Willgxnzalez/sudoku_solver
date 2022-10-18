@@ -40,20 +40,23 @@ def valid(val, pos, brd):
                 return False
     return True
 
-def solve(brd):
+
+def solve(brd, cells):
     if get_empty_pos(brd):  # if board is not solved
         i, j = get_empty_pos(brd)
 
         for num in range(0,10):
             if valid(num, (i,j), brd):
                 brd[i][j] = num
-#
-                if solve(brd):  # if board is solved
+                cells[i][j].update(num)
+
+                if solve(brd, cells):  # if board is solved
                     return True
                 else: # try next number
                     continue
 
         brd[i][j] = 0
+        cells[i][j].update(0)
         return False  # only return False if no numbers are valid
     return True  # this initiates the return up the call stack
 
